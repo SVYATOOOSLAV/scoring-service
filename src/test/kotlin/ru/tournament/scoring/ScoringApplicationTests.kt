@@ -10,7 +10,4 @@ class ScoringApplicationTests {
     fun contextLoads() {
         println("Hello world")
     }
-
-
-
 }

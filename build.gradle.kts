@@ -6,6 +6,14 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.23.7"
 }
 
+detekt {
+    toolVersion = "1.23.7"
+    config.setFrom(file("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    autoCorrect = true
+    ignoreFailures = false
+}
+
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
@@ -23,6 +31,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    // Detekt custom rules
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -38,11 +48,14 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-configurations.all {
-    resolutionStrategy.eachDependency {
-        if (requested.group == "org.jetbrains.kotlin") {
-            useVersion(io.gitlab.arturbosch.detekt.getSupportedKotlinVersion())
+dependencyManagement {
+    configurations.matching { it.name == "detekt" }.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin") {
+                useVersion(io.gitlab.arturbosch.detekt.getSupportedKotlinVersion())
+            }
         }
     }
 }
+
 
