@@ -1,0 +1,47 @@
+formatting:
+  active: true
+  autoCorrect: true
+  FinalNewline:
+    active: true
+    autoCorrect: true
+  NoWildcardImports:
+    active: false
+
+complexity:
+  active: true
+  LargeClass:
+    active: true
+    threshold: 200
+  TooManyFunctions:
+    active: true
+    thresholdInClasses: 15
+  ComplexInterface:
+    active: true
+    threshold: 10
+    includeStaticDeclarations: false
+  LongMethod:
+    active: true
+    threshold: 30
+  LongParameterList:
+    active: true
+    functionThreshold: 6
+    constructorThreshold: 6
+    ignoreDefaultParameters: true
+
+empty-blocks:
+  active: true
+  EmptyClassBlock:
+    active: false
+  EmptyFunctionBlock:
+    active: false
+
+style:
+  active: true
+  NewLineAtEndOfFile:
+    active: true
+  WildcardImport:
+    active: false
+
+performance:
+  SpreadOperator:
+    active: false
