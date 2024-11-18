@@ -9,5 +9,4 @@ data class SportsmenResponse(
     val birthday: LocalDate? = null,
     val sport: String? = null,
     val rate: Double? = null,
-) {
-}
+)

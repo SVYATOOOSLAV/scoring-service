@@ -1,8 +1,8 @@
 package ru.tournament.scoring.logic.service
 
-import ru.tournament.scoring.logic.common.dto.SportsmenResponse
-import ru.tournament.scoring.logic.common.model.Sportsmen
+import ru.tournament.model.SportsmenRequestDto
+import ru.tournament.scoring.logic.common.model.Result
 
 interface SelectorService {
-    fun selectScoringBySport(sportsmen: Sportsmen): SportsmenResponse
+    fun score(sportsmen: SportsmenRequestDto): Result
 }

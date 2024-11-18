@@ -1,40 +1,26 @@
 package ru.tournament.scoring.api.controller
 
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import ru.tournament.scoring.logic.common.dto.SportsmenRequest
-import ru.tournament.scoring.logic.common.dto.SportsmenResponse
-import ru.tournament.scoring.logic.common.enums.Sport
-import ru.tournament.scoring.logic.mapper.toCorrect
+import org.springframework.web.bind.annotation.RestController
+import ru.tournament.api.ScoringServiceApi
+import ru.tournament.model.SportsmenRequestDto
+import ru.tournament.model.SportsmenResponseDto
 import ru.tournament.scoring.logic.service.SelectorService
-import java.time.LocalDate
 
 @RestController
 class SportsmenController(
-    private val selectorService: SelectorService
-) {
+    private val service: SelectorService
+) : ScoringServiceApi {
 
-    @GetMapping("/sportsmen/{id}")
-    fun getSportsmen(@PathVariable id: Int): ResponseEntity<SportsmenResponse> {
-        return ResponseEntity.ok(
-            SportsmenResponse(
-                name = "stubName",
-                surname = "stubSurname",
-                birthday = LocalDate.now(),
-                sport = Sport.BOX.value
-            )
-        )
-    }
+    override fun scoreSportsmen(
+        sportsmenRequestDto: SportsmenRequestDto
+    ): ResponseEntity<SportsmenResponseDto> {
+        val result = service.score(sportsmenRequestDto)
 
-    @PostMapping("/sportsmen")
-    fun postSportsmen(@RequestBody sportsmen: SportsmenRequest): ResponseEntity<SportsmenResponse> {
-        selectorService.selectScoringBySport(sportsmen.toCorrect())
-        return ResponseEntity.ok(
-            SportsmenResponse(
-                name = sportsmen.name,
-                surname = sportsmen.surname,
-                birthday = sportsmen.birthday,
-                sport = sportsmen.sport
+        return ResponseEntity.ok().body(
+            SportsmenResponseDto(
+                result.code,
+                result.message
             )
         )
     }

@@ -2,23 +2,23 @@ package ru.tournament.scoring.logic.service.impl
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import ru.tournament.scoring.logic.common.dto.SportsmenResponse
+import ru.tournament.model.SportsmenRequestDto
 import ru.tournament.scoring.logic.common.enums.Sport
-import ru.tournament.scoring.logic.common.model.Sportsmen
+import ru.tournament.scoring.logic.common.model.Result
 import ru.tournament.scoring.logic.service.ScoringService
 import ru.tournament.scoring.logic.service.SelectorService
 
 @Service
 class SelectorServiceImpl(
     @Autowired private val sportMap: Map<Sport, ScoringService>
-): SelectorService {
+) : SelectorService {
 
-    override fun selectScoringBySport(sportsmen: Sportsmen): SportsmenResponse {
-       val sportService = sportMap[sportsmen.sport]
-           ?: throw IllegalArgumentException("Sport ${sportsmen.sport} not found")
+    override fun score(sportsmen: SportsmenRequestDto): Result {
+        val sport = Sport.valueOf(sportsmen.sport.uppercase())
 
-        sportService.score(sportsmen)
+        val service = sportMap[sport]
+            ?: throw IllegalArgumentException("Sport ${sportsmen.sport} not found")
 
-        return SportsmenResponse()
+        return service.score(sportsmen)
     }
 }

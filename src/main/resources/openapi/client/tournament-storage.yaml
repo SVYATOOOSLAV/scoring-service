@@ -1,0 +1,459 @@
+openapi: 3.0.2
+info:
+  title: "tournament-storage"
+  description: "It's easy to manage your sport tournament or league"
+  version: "1.0"
+  contact:
+    name: "SportManager"
+    url: "https://sportmanager.com/support"
+    email: "sportmanager@gmail.com"
+
+paths:
+  /api/v1/users/{id}/{sport}:
+    get:
+      tags:
+        - TournamentStorage
+      operationId: getSportsmenInfo
+      summary: "Получить данные о спортсмене"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: sport
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Информация о спортсмене"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SportsmenInfoResponse'
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequest400Dto'
+        '401':
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unauthorized401Dto'
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forbidden403Dto'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotFound404Dto'
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InternalError500Dto'
+
+  /api/v1/users/{id}/{sport}/games:
+    get:
+      tags:
+        - TournamentStorage
+      operationId: getAllSportsmenGames
+      summary: "Получить все игры спортсмена по конкретному виду спорта"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: sport
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Список игр по конкретному виду спорта"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SportsmenGame'
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequest400Dto'
+        '401':
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unauthorized401Dto'
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forbidden403Dto'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotFound404Dto'
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InternalError500Dto'
+
+  /api/v1/users/{id}/{sport}/games/{period}:
+    get:
+      tags:
+        - TournamentStorage
+      operationId: getGamesLastPeriod
+      summary: "Получить все игры спортсмена по конкретному виду спорта"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: sport
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: period
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "Список игр по конкретному виду спорта за конкретный промежуток времени"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SportsmenGame'
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequest400Dto'
+        '401':
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unauthorized401Dto'
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forbidden403Dto'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotFound404Dto'
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InternalError500Dto'
+
+  /api/v1/users/{id}/{sport}/sanctions/{period}:
+    get:
+      tags:
+        - TournamentStorage
+      operationId: getSanctionLastYear
+      summary: "Получить все санкции спортсмена по конкретному виду спорта"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: sport
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: period
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "Список санкций по конкретному виду спорта"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SportsmenSanction'
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequest400Dto'
+        '401':
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unauthorized401Dto'
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forbidden403Dto'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotFound404Dto'
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InternalError500Dto'
+
+  /api/v1/users/{id}/{sport}/{rate}:
+    post:
+      tags:
+        - TournamentStorage
+      operationId: updateSportsmenRate
+      summary: "Обновить рейтинг спортсмена"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: sport
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: rate
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: "Обновление рейтинга спортсмена по виду спорта"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SportsmenResponseDto"
+
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequest400Dto'
+        '401':
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unauthorized401Dto'
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forbidden403Dto'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotFound404Dto'
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InternalError500Dto'
+
+components:
+  schemas:
+
+    SportsmenInfoResponse:
+      type: object
+      required:
+        - id
+        - sport
+        - is_male
+        - birthday
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+        is_male:
+          type: boolean
+        birthday:
+          type: string
+          format: date
+        weight:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+
+    SportsmenResponseDto:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+
+    SportsmenGame:
+      type: object
+      properties:
+        sportsmen_id:
+          type: integer
+        tournament_id:
+          type: integer
+        sport:
+          type: string
+        is_official:
+          type: boolean
+        place:
+          type: integer
+
+    SportsmenSanction:
+      type: object
+      properties:
+        sportsmen_id:
+          type: integer
+        sanction_id:
+          type: integer
+
+
+    BadRequest400Dto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    Unauthorized401Dto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    Forbidden403Dto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    NotFound404Dto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    InternalError500Dto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
