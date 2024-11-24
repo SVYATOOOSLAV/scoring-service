@@ -8,6 +8,7 @@ import ru.tournament.scoring.logic.common.enums.Sport
 import ru.tournament.scoring.logic.common.model.Result
 import ru.tournament.scoring.logic.exception.BusinessLogicException
 import ru.tournament.scoring.logic.service.ScoringService
+import java.io.*
 import java.time.LocalDate
 import java.time.Period
 
@@ -72,13 +73,14 @@ class BoxService(
 
         // step 6 result
         var rate = (BASE_SCORE + averageOfWin) * coefAge * coefWeight * coefHeight * coefSanction * coefWinner
+        var newRate = String.format("%.2f", rate).replace(",", ".").toDouble()
 
-        var result = tournamentStorageService.updateRateSportsmen(sportsmenInfo.id, type().value, rate)
+        var result = tournamentStorageService.updateRateSportsmen(sportsmenInfo.id, type().value, newRate)
 
         if (!result.isSuccess()) {
             throw BusinessLogicException(-99, "Ошибка выполнения процедуры")
         }
 
-        return result
+        return Result(0, "")
     }
 }

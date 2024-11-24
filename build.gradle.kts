@@ -35,6 +35,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("jakarta.validation:jakarta.validation-api:3.1.0")
 
+    // Logging
+    implementation("ch.qos.logback:logback-classic:1.5.12")
+    implementation("ch.qos.logback:logback-core:1.5.12")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
+
     // Spring
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework:spring-webflux")
@@ -51,7 +56,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.wiremock:wiremock:3.9.2")
+
+    // https://mvnrepository.com/artifact/org.wiremock/wiremock-standalone
+    testImplementation("org.wiremock:wiremock-standalone:3.9.2")
 }
 
 kotlin {
