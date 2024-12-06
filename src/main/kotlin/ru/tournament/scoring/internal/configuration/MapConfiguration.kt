@@ -9,7 +9,7 @@ import java.util.*
 
 @Configuration
 class MapConfiguration(
-    @Autowired private val sports: List<ScoringService>
+    private val sports: List<ScoringService>
 ) {
 
     @Bean

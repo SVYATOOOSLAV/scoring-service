@@ -52,6 +52,9 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-annotations:2.2.23")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
+    // Aspect
+    implementation("org.aspectj:aspectjweaver:1.9.22.1")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

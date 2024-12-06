@@ -1,8 +1,8 @@
-package ru.tournament.scoring.logic.service.impl
+package ru.tournament.scoring.logic.service.impl.box
 
 import org.springframework.stereotype.Service
-import ru.tournament.model.SportsmenGame
-import ru.tournament.model.SportsmenSanction
+import ru.tournament.model.SportsmenGamesResponse
+import ru.tournament.model.SportsmenSanctionsResponse
 import ru.tournament.scoring.internal.configuration.properties.getPlaceMap
 import ru.tournament.scoring.internal.configuration.properties.getPlaceMapForOfficial
 import ru.tournament.scoring.logic.service.CoefficientMakerService
@@ -10,6 +10,7 @@ import kotlin.math.pow
 
 @Service
 class BoxMakerService : CoefficientMakerService {
+
     override fun calculateAge(age: Int): Double {
         return when {
             age in 1..45 -> -age * age / 2300.0 + 1
@@ -48,7 +49,7 @@ class BoxMakerService : CoefficientMakerService {
         } ?: 0.2
     }
 
-    override fun calculateAverageForGames(games: List<SportsmenGame>): Int {
+    override fun calculateAverageForGames(games: List<SportsmenGamesResponse>): Double {
         val placeMap = getPlaceMap()
         val placeOfficialMap = getPlaceMapForOfficial()
 
@@ -58,10 +59,10 @@ class BoxMakerService : CoefficientMakerService {
             baseScore + officialScore
         }
 
-        return totalScore / games.size
+        return totalScore / games.size.toDouble()
     }
 
-    override fun calculateSanctions(sanctions: List<SportsmenSanction>): Double {
+    override fun calculateSanctions(sanctions: List<SportsmenSanctionsResponse>): Double {
         val cnt = sanctions.size
         return when {
             cnt in 0..10 -> -cnt * cnt / 130.0 + 1
@@ -69,7 +70,7 @@ class BoxMakerService : CoefficientMakerService {
         }
     }
 
-    override fun calculateLastWins(games: List<SportsmenGame>): Double {
+    override fun calculateLastWins(games: List<SportsmenGamesResponse>): Double {
         return (games.size + 7.0).pow(2) / 290
     }
 }

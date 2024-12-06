@@ -3,7 +3,6 @@ package ru.tournament.scoring.api.controller
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.client.HttpServerErrorException
 import ru.tournament.api.ScoringServiceApi
 import ru.tournament.model.SportsmenRequestDto
 import ru.tournament.model.SportsmenResponseDto

@@ -10,25 +10,21 @@ class TournamentStorageService(
     private val client: TournamentStorageApiClient
 ) {
 
-    fun getSportsmenInfo(idSportsmen: Int, sport: String): SportsmenInfoResponse {
-        return client.getSportsmenInfo(idSportsmen, sport).block()
+    fun getSportsmenInfo(infoRequest: SportsmenInfoRequest): SportsmenInfoResponse {
+        return client.getSportsmenInfo(infoRequest).block()
             ?: throw Exception("SportsmenInfoResponse not found")
     }
 
-    fun getAllSportsmenGames(idSportsmen: Int, sport: String): List<SportsmenGame> {
-        return client.getAllSportsmenGames(idSportsmen, sport).block().orEmpty()
+    fun getSportsmenGames(gamesRequest: SportsmenGamesRequest): List<SportsmenGamesResponse> {
+        return client.getSportsmenGames(gamesRequest).block().orEmpty()
     }
 
-    fun getSportsmenSanctionLastPeriod(idSportsmen: Int, sport: String, period: Int): List<SportsmenSanction> {
-        return client.getSanctionLastYear(idSportsmen, sport, period).block().orEmpty()
+    fun getSportsmenSanction(sanctionsRequest: SportsmenSanctionsRequest): List<SportsmenSanctionsResponse> {
+        return client.getSportsmenSanctions(sanctionsRequest).block().orEmpty()
     }
 
-    fun getSportsmenGamesLastPeriod(idSportsmen: Int, sport: String, period: Int): List<SportsmenGame> {
-        return client.getGamesLastPeriod(idSportsmen, sport, period).block().orEmpty()
-    }
-
-    fun updateRateSportsmen(idSportsmen: Int, sport: String, rate: Double): Result {
-        val response = client.updateSportsmenRate(idSportsmen, sport, rate).block()
+    fun updateRateSportsmen(sportsmenRateRequest: SportsmenRateRequest): Result {
+        val response = client.updateSportsmenRate(sportsmenRateRequest).block()
             ?: throw Exception("SportsmenResponseDto not found")
 
         return Result(response.code, response.message)

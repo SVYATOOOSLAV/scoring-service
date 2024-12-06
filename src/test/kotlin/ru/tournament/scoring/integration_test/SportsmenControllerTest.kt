@@ -1,35 +1,28 @@
 package ru.tournament.scoring.integration_test
 
-import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension
-import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.RegisterExtension
 import org.springframework.http.MediaType
-import org.springframework.http.RequestEntity.post
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.tournament.model.*
 import ru.tournament.scoring.AbstractMockMvc
 import java.time.LocalDate
-import java.util.*
 
-@WireMockTest
-@ActiveProfiles("local")
-class SportsmenControllerTest: AbstractMockMvc() {
+class SportsmenControllerTest : AbstractMockMvc() {
 
     @Test
-    fun positiveScoreSportsmenTest(){
+    fun positiveScoreSportsmenTest() {
         val requestDto = SportsmenRequestDto(
             sportsmenId = 1,
             sport = "box",
             period = 12
+        )
+
+        val requestGames = SportsmenGamesRequest(
+            requestDto.sportsmenId,
+            requestDto.sport
         )
 
         val sportsmenResponse = SportsmenInfoResponse(
@@ -42,7 +35,7 @@ class SportsmenControllerTest: AbstractMockMvc() {
         )
 
         val allGames = listOf(
-            SportsmenGame(
+            SportsmenGamesResponse(
                 sportsmenId = requestDto.sportsmenId,
                 tournamentId = 1,
                 sport = requestDto.sport,
@@ -58,8 +51,14 @@ class SportsmenControllerTest: AbstractMockMvc() {
             )
         )
 
+        val requestPeriodGames = SportsmenGamesRequest(
+            requestDto.sportsmenId,
+            requestDto.sport,
+            requestDto.period
+        )
+
         val gamesLastPeriod = listOf(
-            SportsmenGame(
+            SportsmenGamesResponse(
                 sportsmenId = requestDto.sportsmenId,
                 tournamentId = 1,
                 sport = requestDto.sport,
@@ -70,40 +69,18 @@ class SportsmenControllerTest: AbstractMockMvc() {
 
         val responseUpdating = SportsmenResponseDto(code = 0, message = "")
 
-        val expectedRate = 0.45
-
         tournamentStorageMockServer.stubFor(
-            get("/api/v1/users/${requestDto.sportsmenId}/${requestDto.sport}")
+            post(urlEqualTo("/api/v1/users/get_sportsmen_info"))
                 .willReturn(
                     aResponse()
-                        .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                         .withBody(toJson(sportsmenResponse))
                 )
         )
 
         tournamentStorageMockServer.stubFor(
-            get("/api/v1/users/${requestDto.sportsmenId}/${requestDto.sport}/games")
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(toJson(allGames))
-                )
-        )
-
-        tournamentStorageMockServer.stubFor(
-            get("/api/v1/users/${requestDto.sportsmenId}/${requestDto.sport}/sanctions/${requestDto.period}")
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(toJson(sanctions))
-                )
-        )
-
-        tournamentStorageMockServer.stubFor(
-            get("/api/v1/users/${requestDto.sportsmenId}/${requestDto.sport}/games/${requestDto.period}")
+            post(urlEqualTo("/api/v1/users/get_sportsmen_games"))
+                .withRequestBody(matchingJsonPath("$.period")) // Проверяем наличие "period"
                 .willReturn(
                     aResponse()
                         .withStatus(200)
@@ -113,7 +90,28 @@ class SportsmenControllerTest: AbstractMockMvc() {
         )
 
         tournamentStorageMockServer.stubFor(
-            post(urlEqualTo("/api/v1/users/${requestDto.sportsmenId}/${requestDto.sport}/${expectedRate}"))
+            post(urlEqualTo("/api/v1/users/get_sportsmen_sanctions"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(toJson(sanctions))
+                )
+        )
+
+        tournamentStorageMockServer.stubFor(
+            post(urlEqualTo("/api/v1/users/get_sportsmen_games"))
+                .withRequestBody(notMatching("$.period")) // Проверяем отсутствие "period"
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(toJson(allGames))
+                )
+        )
+
+        tournamentStorageMockServer.stubFor(
+            post(urlEqualTo("/api/v1/users/update_sportsmen_rate"))
                 .willReturn(
                     aResponse()
                         .withStatus(200)
@@ -121,6 +119,7 @@ class SportsmenControllerTest: AbstractMockMvc() {
                         .withBody(toJson(responseUpdating))
                 )
         )
+
 
         mvc.perform(
             MockMvcRequestBuilders.post("/api/v1/users/score")

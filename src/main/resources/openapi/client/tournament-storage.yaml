@@ -9,23 +9,18 @@ info:
     email: "sportmanager@gmail.com"
 
 paths:
-  /api/v1/users/{id}/{sport}:
-    get:
+  /api/v1/users/get_sportsmen_info:
+    post:
       tags:
         - TournamentStorage
       operationId: getSportsmenInfo
       summary: "Получить данные о спортсмене"
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: sport
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsmenInfoRequest'
       responses:
         '200':
           description: "Информация о спортсмене"
@@ -74,23 +69,18 @@ paths:
                 items:
                   $ref: '#/components/schemas/InternalError500Dto'
 
-  /api/v1/users/{id}/{sport}/games:
-    get:
+  /api/v1/users/get_sportsmen_games:
+    post:
       tags:
         - TournamentStorage
-      operationId: getAllSportsmenGames
-      summary: "Получить все игры спортсмена по конкретному виду спорта"
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: sport
-          required: true
-          schema:
-            type: string
+      operationId: getSportsmenGames
+      summary: "Получить игры спортсмена по конкретному виду спорта"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsmenGamesRequest'
       responses:
         '200':
           description: "Список игр по конкретному виду спорта"
@@ -99,7 +89,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SportsmenGame'
+                  $ref: '#/components/schemas/SportsmenGamesResponse'
         '400':
           description: "Bad request"
           content:
@@ -141,100 +131,18 @@ paths:
                 items:
                   $ref: '#/components/schemas/InternalError500Dto'
 
-  /api/v1/users/{id}/{sport}/games/{period}:
-    get:
+  /api/v1/users/get_sportsmen_sanctions:
+    post:
       tags:
         - TournamentStorage
-      operationId: getGamesLastPeriod
-      summary: "Получить все игры спортсмена по конкретному виду спорта"
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: sport
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: period
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: "Список игр по конкретному виду спорта за конкретный промежуток времени"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SportsmenGame'
-        '400':
-          description: "Bad request"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BadRequest400Dto'
-        '401':
-          description: "Unauthorized"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Unauthorized401Dto'
-        '403':
-          description: "Forbidden"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Forbidden403Dto'
-        '404':
-          description: "Not found"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NotFound404Dto'
-        '500':
-          description: "Internal Server Error"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InternalError500Dto'
-
-  /api/v1/users/{id}/{sport}/sanctions/{period}:
-    get:
-      tags:
-        - TournamentStorage
-      operationId: getSanctionLastYear
+      operationId: getSportsmenSanctions
       summary: "Получить все санкции спортсмена по конкретному виду спорта"
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: sport
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: period
-          required: true
-          schema:
-            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsmenSanctionsRequest'
       responses:
         '200':
           description: "Список санкций по конкретному виду спорта"
@@ -243,7 +151,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SportsmenSanction'
+                  $ref: '#/components/schemas/SportsmenSanctionsResponse'
         '400':
           description: "Bad request"
           content:
@@ -285,36 +193,25 @@ paths:
                 items:
                   $ref: '#/components/schemas/InternalError500Dto'
 
-  /api/v1/users/{id}/{sport}/{rate}:
+  /api/v1/users/update_sportsmen_rate:
     post:
       tags:
         - TournamentStorage
       operationId: updateSportsmenRate
       summary: "Обновить рейтинг спортсмена"
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: sport
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: rate
-          required: true
-          schema:
-            type: number
-            format: double
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsmenRateRequest'
       responses:
         '200':
           description: "Обновление рейтинга спортсмена по виду спорта"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SportsmenResponseDto"
+                $ref: "#/components/schemas/SportsmenRateResponse"
 
         '400':
           description: "Bad request"
@@ -360,6 +257,17 @@ paths:
 components:
   schemas:
 
+    SportsmenInfoRequest:
+      type: object
+      required:
+        - id
+        - sport
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+
     SportsmenInfoResponse:
       type: object
       required:
@@ -384,7 +292,22 @@ components:
           type: number
           format: double
 
-    SportsmenResponseDto:
+    SportsmenRateRequest:
+      type: object
+      required:
+        - id
+        - sport
+        - rate
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+        rate:
+          type: number
+          format: double
+
+    SportsmenRateResponse:
       type: object
       required:
         - code
@@ -395,7 +318,20 @@ components:
         message:
           type: string
 
-    SportsmenGame:
+    SportsmenGamesRequest:
+      type: object
+      required:
+        - id
+        - sport
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+        period:
+          type: integer
+
+    SportsmenGamesResponse:
       type: object
       properties:
         sportsmen_id:
@@ -409,7 +345,20 @@ components:
         place:
           type: integer
 
-    SportsmenSanction:
+    SportsmenSanctionsRequest:
+      type: object
+      required:
+        - id
+        - sport
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+        period:
+          type: integer
+
+    SportsmenSanctionsResponse:
       type: object
       properties:
         sportsmen_id:

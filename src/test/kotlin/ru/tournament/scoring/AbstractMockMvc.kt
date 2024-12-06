@@ -30,10 +30,6 @@ class AbstractMockMvc {
             return mapper.writeValueAsString(dto)
         }
 
-//        fun <T> toObject(obj: String, clazz: Class<T>): T {
-//            return mapper.readValue(obj, clazz)
-//        }
-
         @JvmStatic
         @RegisterExtension
         val tournamentStorageMockServer: WireMockExtension =
