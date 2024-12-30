@@ -1,6 +1,5 @@
 package ru.tournament.scoring
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension
@@ -17,7 +16,7 @@ import org.springframework.test.web.servlet.MockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @WireMockTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 class AbstractMockMvc {
 
     @Autowired

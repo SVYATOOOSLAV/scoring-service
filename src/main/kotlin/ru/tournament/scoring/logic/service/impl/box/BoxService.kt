@@ -7,33 +7,35 @@ import ru.tournament.model.SportsmenRequestDto
 import ru.tournament.scoring.BASE_SCORE
 import ru.tournament.scoring.logic.client.TournamentStorageService
 import ru.tournament.scoring.logic.common.enums.Sport
+import ru.tournament.scoring.logic.common.enums.Step
 import ru.tournament.scoring.logic.common.model.Result
 import ru.tournament.scoring.logic.exception.BusinessLogicException
+import ru.tournament.scoring.logic.exception.Codes
 import ru.tournament.scoring.logic.mapper.toSportsmenInfo
 import ru.tournament.scoring.logic.service.ScoringService
-import ru.tournament.scoring.logic.service.ScoringStep
 
 @Service
 class BoxService(
-    private val steps: List<ScoringStep>,
+    private val steps: List<BoxScoringStep>,
     private val tournamentStorageService: TournamentStorageService
 ) : ScoringService {
 
     override fun type(): Sport = Sport.BOX
 
     override fun score(sportsmenRequestDto: SportsmenRequestDto): Result {
-        // Шаг 1: Подготовка контекста
         val sportsmenInfo = tournamentStorageService.getSportsmenInfo(
             SportsmenInfoRequest(sportsmenRequestDto.sportsmenId, sportsmenRequestDto.sport)
         ).toSportsmenInfo(sportsmenRequestDto.period)
 
-        // Шаг 2: Расчет через шаги
         val coefficients = steps.map { it.calculate(sportsmenInfo) }
-        val finalScore = BASE_SCORE + coefficients
-            .filter { it > 0 }
-            .reduce { acc, coef -> acc * coef }
 
-        // Шаг 3: Обновление рейтинга
+        val finalScore = coefficients.fold(BASE_SCORE) { acc, coefficient ->
+            when (coefficient.typeStep) {
+                Step.SANCTIONS -> acc - coefficient.resultScore
+                else -> acc + coefficient.resultScore
+            }
+        }
+
         val sportsmenRateRequest = SportsmenRateRequest(
             sportsmenRequestDto.sportsmenId,
             type().value,
@@ -42,9 +44,9 @@ class BoxService(
         val result = tournamentStorageService.updateRateSportsmen(sportsmenRateRequest)
 
         if (!result.isSuccess()) {
-            throw BusinessLogicException(-99, "Ошибка выполнения процедуры")
+            throw BusinessLogicException(Codes.PROCEDURE_ERROR)
         }
 
-        return Result(0, "")
+        return result
     }
 }

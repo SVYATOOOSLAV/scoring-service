@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: scoring
+
+server:
+  port: 8081
+
+client:
+  tournament-storage:
+    url: http://localhost:8080

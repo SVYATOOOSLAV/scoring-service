@@ -1,4 +1,4 @@
-package ru.tournament.scoring.internal.configuration.properties
+package ru.tournament.scoring.configuration.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

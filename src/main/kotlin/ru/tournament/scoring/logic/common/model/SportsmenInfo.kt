@@ -9,5 +9,5 @@ data class SportsmenInfo(
     val birthday: LocalDate,
     val weight: Double?,
     val height: Double?,
-    val periodValidation: Int?
+    val periodValidation: Int? = null
 )

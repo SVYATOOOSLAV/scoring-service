@@ -311,7 +311,6 @@ components:
       type: object
       required:
         - code
-        - message
       properties:
         code:
           type: integer

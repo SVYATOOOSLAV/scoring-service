@@ -1,6 +1,5 @@
-package ru.tournament.scoring.internal.configuration
+package ru.tournament.scoring.configuration
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import ru.tournament.scoring.logic.common.enums.Sport

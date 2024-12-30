@@ -1,11 +1,11 @@
-package ru.tournament.scoring
+package ru.tournament.scoring.unit_test
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 class ScoringApplicationTests {
 
     @Test

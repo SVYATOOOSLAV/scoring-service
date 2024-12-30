@@ -8,126 +8,254 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.tournament.model.*
 import ru.tournament.scoring.AbstractMockMvc
+import testFixtures.stubs.*
 import java.time.LocalDate
 
 class SportsmenControllerTest : AbstractMockMvc() {
 
+    val request = SportsmenRequestDto(
+        sportsmenId = 1,
+        sport = "box",
+        period = 12
+    )
+
+    var infoResponse = SportsmenInfoResponse(
+        id = request.sportsmenId,
+        sport = request.sport,
+        isMale = true,
+        birthday = LocalDate.of(1970, 1, 1),
+        weight = 88.7,
+        height = 1.87
+    )
+
+    val allGames = listOf(
+        SportsmenGamesResponse(
+            sportsmenId = request.sportsmenId,
+            tournamentId = 1,
+            sport = request.sport,
+            isOfficial = true,
+            place = 2
+        )
+    )
+
+    val sanctions = listOf(
+        SportsmenSanction(
+            sportsmenId = request.sportsmenId,
+            sanctionId = 1
+        )
+    )
+
+    val gamesLastPeriod = listOf(
+        SportsmenGamesResponse(
+            sportsmenId = request.sportsmenId,
+            tournamentId = 1,
+            sport = request.sport,
+            isOfficial = true,
+            place = 2
+        )
+    )
+
+    val response = SportsmenRateResponse(code = 0)
+
     @Test
     fun positiveScoreSportsmenTest() {
-        val requestDto = SportsmenRequestDto(
-            sportsmenId = 1,
-            sport = "box",
-            period = 12
-        )
-
-        val requestGames = SportsmenGamesRequest(
-            requestDto.sportsmenId,
-            requestDto.sport
-        )
-
-        val sportsmenResponse = SportsmenInfoResponse(
-            id = requestDto.sportsmenId,
-            sport = requestDto.sport,
-            isMale = true,
-            birthday = LocalDate.of(1970, 1, 1),
-            weight = 88.7,
-            height = 1.87
-        )
-
-        val allGames = listOf(
-            SportsmenGamesResponse(
-                sportsmenId = requestDto.sportsmenId,
-                tournamentId = 1,
-                sport = requestDto.sport,
-                isOfficial = true,
-                place = 2
-            )
-        )
-
-        val sanctions = listOf(
-            SportsmenSanction(
-                sportsmenId = requestDto.sportsmenId,
-                sanctionId = 1
-            )
-        )
-
-        val requestPeriodGames = SportsmenGamesRequest(
-            requestDto.sportsmenId,
-            requestDto.sport,
-            requestDto.period
-        )
-
-        val gamesLastPeriod = listOf(
-            SportsmenGamesResponse(
-                sportsmenId = requestDto.sportsmenId,
-                tournamentId = 1,
-                sport = requestDto.sport,
-                isOfficial = true,
-                place = 2
-            )
-        )
-
-        val responseUpdating = SportsmenResponseDto(code = 0, message = "")
-
-        tournamentStorageMockServer.stubFor(
-            post(urlEqualTo("/api/v1/users/get_sportsmen_info"))
-                .willReturn(
-                    aResponse()
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(toJson(sportsmenResponse))
-                )
-        )
-
-        tournamentStorageMockServer.stubFor(
-            post(urlEqualTo("/api/v1/users/get_sportsmen_games"))
-                .withRequestBody(matchingJsonPath("$.period")) // Проверяем наличие "period"
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(toJson(gamesLastPeriod))
-                )
-        )
-
-        tournamentStorageMockServer.stubFor(
-            post(urlEqualTo("/api/v1/users/get_sportsmen_sanctions"))
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(toJson(sanctions))
-                )
-        )
-
-        tournamentStorageMockServer.stubFor(
-            post(urlEqualTo("/api/v1/users/get_sportsmen_games"))
-                .withRequestBody(notMatching("$.period")) // Проверяем отсутствие "period"
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(toJson(allGames))
-                )
-        )
-
-        tournamentStorageMockServer.stubFor(
-            post(urlEqualTo("/api/v1/users/update_sportsmen_rate"))
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(toJson(responseUpdating))
-                )
-        )
-
+        getSportsmenInfoStub(200, infoResponse)
+        getSportsmenGamesStub(200, allGames)
+        getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
+        getSportsmenSanctionsStub(200, sanctions)
+        updateSportsmenRateStub(200, response)
 
         mvc.perform(
             MockMvcRequestBuilders.post("/api/v1/users/score")
-                .content(toJson(requestDto))
+                .content(toJson(request))
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.code").value(0))
-            .andExpect(jsonPath("$.message").value(""))
+            .andExpect(jsonPath("$.message").doesNotExist())
+    }
+
+    @Test
+    fun getSportsmenInfoReturnInternalErrorTest(){
+        getSportsmenInfoStub(500, infoResponse)
+        getSportsmenGamesStub(200, allGames)
+        getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
+        getSportsmenSanctionsStub(200, sanctions)
+        updateSportsmenRateStub(200, response)
+
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isInternalServerError)
+            .andExpect(jsonPath("$.code").value(-99))
+            .andExpect(jsonPath("$.message").value("Ошибки внешеней системы"))
+    }
+
+    @Test
+    fun getSportsmenInfoBadRequestTest(){
+        getSportsmenInfoStub(400, infoResponse)
+        getSportsmenGamesStub(200, allGames)
+        getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
+        getSportsmenSanctionsStub(200, sanctions)
+        updateSportsmenRateStub(200, response)
+
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isInternalServerError)
+            .andExpect(jsonPath("$.code").value(-99))
+            .andExpect(jsonPath("$.message").value("Ошибки внешеней системы"))
+    }
+
+    @Test
+    fun getSportsmenGamesReturnInternalErrorTest(){
+        getSportsmenInfoStub(200, infoResponse)
+        getSportsmenGamesStub(500, allGames)
+        getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
+        getSportsmenSanctionsStub(200, sanctions)
+        updateSportsmenRateStub(200, response)
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value(0))
+            .andExpect(jsonPath("$.message").doesNotExist())
+    }
+
+    @Test
+    fun getSportsmenGamesReturnBadRequestTest(){
+        getSportsmenInfoStub(200, infoResponse)
+        getSportsmenGamesStub(400, allGames)
+        getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
+        getSportsmenSanctionsStub(200, sanctions)
+        updateSportsmenRateStub(200, response)
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value(0))
+            .andExpect(jsonPath("$.message").doesNotExist())
+    }
+
+    @Test
+    fun getSportsmenGamesLastPeriodReturnInternalErrorTest(){
+        getSportsmenInfoStub(200, infoResponse)
+        getSportsmenGamesStub(200, allGames)
+        getSportsmenGamesLastPeriodStub(500, gamesLastPeriod)
+        getSportsmenSanctionsStub(200, sanctions)
+        updateSportsmenRateStub(200, response)
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value(0))
+            .andExpect(jsonPath("$.message").doesNotExist())
+    }
+
+    @Test
+    fun getSportsmenGamesLastPeriodReturnIBadRequestTest(){
+        getSportsmenInfoStub(200, infoResponse)
+        getSportsmenGamesStub(200, allGames)
+        getSportsmenGamesLastPeriodStub(400, gamesLastPeriod)
+        getSportsmenSanctionsStub(200, sanctions)
+        updateSportsmenRateStub(200, response)
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value(0))
+            .andExpect(jsonPath("$.message").doesNotExist())
+    }
+
+    @Test
+    fun getSportsmenSanctionsReturnInternalErrorTest(){
+        getSportsmenInfoStub(200, infoResponse)
+        getSportsmenGamesStub(200, allGames)
+        getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
+        getSportsmenSanctionsStub(500, sanctions)
+        updateSportsmenRateStub(200, response)
+
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value(0))
+            .andExpect(jsonPath("$.message").doesNotExist())
+    }
+
+    @Test
+    fun getSportsmenSanctionsReturnBadRequestTest(){
+        getSportsmenInfoStub(200, infoResponse)
+        getSportsmenGamesStub(200, allGames)
+        getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
+        getSportsmenSanctionsStub(400, sanctions)
+        updateSportsmenRateStub(200, response)
+
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value(0))
+            .andExpect(jsonPath("$.message").doesNotExist())
+    }
+
+    @Test
+    fun updateSportsmenRateReturnErrorTest(){
+        getSportsmenInfoStub(200, infoResponse)
+        getSportsmenGamesStub(200, allGames)
+        getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
+        getSportsmenSanctionsStub(200, sanctions)
+        updateSportsmenRateStub(500, response)
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isInternalServerError)
+            .andExpect(jsonPath("$.code").value(-99))
+            .andExpect(jsonPath("$.message").value("Ошибки внешеней системы"))
+    }
+
+    @Test
+    fun updateSportsmenRateReturnEBadRequestTest(){
+        getSportsmenInfoStub(200, infoResponse)
+        getSportsmenGamesStub(200, allGames)
+        getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
+        getSportsmenSanctionsStub(200, sanctions)
+        updateSportsmenRateStub(400, response)
+
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/score")
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isInternalServerError)
+            .andExpect(jsonPath("$.code").value(-99))
+            .andExpect(jsonPath("$.message").value("Ошибки внешеней системы"))
     }
 }
