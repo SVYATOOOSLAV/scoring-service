@@ -1,3 +1,6 @@
+build:
+  excludeCorrectable: false
+
 formatting:
   active: true
   autoCorrect: true
@@ -5,13 +8,17 @@ formatting:
     active: true
     autoCorrect: true
   NoWildcardImports:
-    active: false
+    active: true
+    autoCorrect: true
+  MaximumLineLength:
+    active: true
+    maxLineLength: 150
 
 complexity:
   active: true
   LargeClass:
     active: true
-    threshold: 200
+    threshold: 300
   TooManyFunctions:
     active: true
     thresholdInClasses: 15
@@ -40,8 +47,27 @@ style:
   NewLineAtEndOfFile:
     active: true
   WildcardImport:
+    active: true
+    excludes: "**/test/**"
+  MaxLineLength:
+    active: true
+    maxLineLength: 150
+  MagicNumber:
     active: false
+  ReturnCount:
+    active: true
+    max: 4
 
 performance:
   SpreadOperator:
     active: false
+
+exceptions:
+  active: true
+  SwallowedException:
+    active: false
+
+naming:
+  PackageNaming:
+    active: true
+    excludes: "**/test/**"

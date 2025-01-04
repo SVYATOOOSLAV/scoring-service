@@ -41,6 +41,5 @@ class AbstractMockMvc {
         fun configuredProperties(registry: DynamicPropertyRegistry) {
             registry.add("client.tournament-storage.url", tournamentStorageMockServer::baseUrl)
         }
-
     }
 }

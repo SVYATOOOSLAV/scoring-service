@@ -7,12 +7,10 @@ import ru.tournament.scoring.logic.service.ScoringService
 import java.util.*
 
 @Configuration
-class MapConfiguration(
-    private val sports: List<ScoringService>
-) {
+class ScoringServicesConfiguration {
 
     @Bean
-    fun createMapSports(): Map<Sport, ScoringService> {
+    fun scoringServices(sports: List<ScoringService>): Map<Sport, ScoringService> {
         val map = EnumMap<Sport, ScoringService>(Sport::class.java)
         sports.forEach { map[it.type()] = it }
         return map

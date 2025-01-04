@@ -1,11 +1,9 @@
 package ru.tournament.scoring.logic.service.impl
 
 import org.springframework.stereotype.Service
-import ru.tournament.model.SportsmenRequestDto
+import ru.tournament.scoring.dto.SportsmenRequestDto
 import ru.tournament.scoring.logic.common.enums.Sport
 import ru.tournament.scoring.logic.common.model.Result
-import ru.tournament.scoring.logic.exception.Codes
-import ru.tournament.scoring.logic.exception.ValidationErrorException
 import ru.tournament.scoring.logic.service.ScoringService
 import ru.tournament.scoring.logic.service.SelectorService
 
@@ -17,8 +15,10 @@ class SelectorServiceImpl(
     override fun score(sportsmen: SportsmenRequestDto): Result {
         val sport = Sport.toEnum(sportsmen.sport)
 
-        val service = sportMap[sport]
+        val service = requireNotNull(sportMap[sport]) {
+            "Scoring service not found for enum ${sportsmen.sport}"
+        }
 
-        return service!!.score(sportsmen)
+        return service.score(sportsmen)
     }
 }

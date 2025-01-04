@@ -10,9 +10,9 @@ enum class Sport(val value: String) {
 
     companion object {
         fun toEnum(value: String): Sport {
-            try{
+            try {
                 return Sport.valueOf(value.uppercase())
-            } catch (e: IllegalArgumentException){
+            } catch (e: IllegalArgumentException) {
                 throw ValidationErrorException(Codes.VALIDATION_ERROR, "Sport [$value] not found")
             }
         }

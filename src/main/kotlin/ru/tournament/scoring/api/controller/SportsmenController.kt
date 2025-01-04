@@ -3,9 +3,9 @@ package ru.tournament.scoring.api.controller
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import ru.tournament.api.ScoringServiceApi
-import ru.tournament.model.SportsmenRequestDto
-import ru.tournament.model.SportsmenResponseDto
+import ru.tournament.scoring.api.ScoringServiceApi
+import ru.tournament.scoring.dto.SportsmenRequestDto
+import ru.tournament.scoring.dto.SportsmenResponseDto
 import ru.tournament.scoring.logic.service.SelectorService
 
 private val logger = KotlinLogging.logger {}
@@ -20,7 +20,7 @@ class SportsmenController(
     ): ResponseEntity<SportsmenResponseDto> {
         val result = service.score(sportsmenRequestDto)
 
-        logger.info { "$result" }
+        logger.info { result }
 
         return ResponseEntity.ok().body(
             SportsmenResponseDto(

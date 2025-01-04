@@ -1,7 +1,7 @@
 package ru.tournament.scoring
 
-import ru.tournament.model.SportsmenGamesResponse
-import ru.tournament.model.SportsmenSanctionsResponse
+import ru.tournament.storage.dto.SportsmenGamesResponse
+import ru.tournament.storage.dto.SportsmenSanctionsResponse
 
 fun generateSportsmenGames(cnt: Int, sport: String): List<SportsmenGamesResponse> {
     return (1..cnt).mapIndexed { ind, el ->

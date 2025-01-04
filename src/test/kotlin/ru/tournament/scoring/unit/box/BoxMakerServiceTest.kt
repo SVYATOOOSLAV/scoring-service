@@ -1,8 +1,7 @@
-package ru.tournament.scoring.unit_test.box
+package ru.tournament.scoring.unit.box
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -11,13 +10,13 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import ru.tournament.model.SportsmenGamesResponse
-import ru.tournament.model.SportsmenSanctionsResponse
 import ru.tournament.scoring.configuration.properties.ScoringProperties
 import ru.tournament.scoring.generateSportsmenGames
 import ru.tournament.scoring.generateSportsmenSanctions
 import ru.tournament.scoring.logic.common.enums.Sport
 import ru.tournament.scoring.logic.service.impl.box.BoxMakerService
+import ru.tournament.storage.dto.SportsmenGamesResponse
+import ru.tournament.storage.dto.SportsmenSanctionsResponse
 import java.util.stream.Stream
 
 @ExtendWith(MockitoExtension::class)

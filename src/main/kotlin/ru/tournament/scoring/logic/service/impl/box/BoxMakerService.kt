@@ -2,11 +2,11 @@ package ru.tournament.scoring.logic.service.impl.box
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
-import ru.tournament.model.SportsmenGamesResponse
-import ru.tournament.model.SportsmenSanctionsResponse
 import ru.tournament.scoring.configuration.properties.ScoringProperties
 import ru.tournament.scoring.logic.mapper.toNormalFormat
 import ru.tournament.scoring.logic.service.CoefficientMakerService
+import ru.tournament.storage.dto.SportsmenGamesResponse
+import ru.tournament.storage.dto.SportsmenSanctionsResponse
 import kotlin.math.pow
 
 @Service

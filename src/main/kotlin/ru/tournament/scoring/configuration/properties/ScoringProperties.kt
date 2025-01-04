@@ -6,5 +6,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class ScoringProperties(
     val places: Map<Int, Int>,
     val officialPlaces: Map<Int, Int>
-) {
-}
+)

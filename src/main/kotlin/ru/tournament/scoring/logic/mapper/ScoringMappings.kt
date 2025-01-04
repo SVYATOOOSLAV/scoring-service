@@ -1,9 +1,8 @@
 package ru.tournament.scoring.logic.mapper
 
-import ru.tournament.model.SportsmenInfoResponse
 import ru.tournament.scoring.logic.common.model.SportsmenInfo
-import kotlin.math.pow
-
+import ru.tournament.storage.dto.SportsmenInfoResponse
+import java.util.*
 
 fun SportsmenInfoResponse.toSportsmenInfo(periodValidation: Int?): SportsmenInfo {
     return SportsmenInfo(
@@ -18,7 +17,5 @@ fun SportsmenInfoResponse.toSportsmenInfo(periodValidation: Int?): SportsmenInfo
 }
 
 fun Double.toNormalFormat(): Double {
-    return String.format("%.3f", this)
-        .replace(",", ".")
-        .toDouble()
+    return "%.3f".format(Locale.US, this).toDouble()
 }

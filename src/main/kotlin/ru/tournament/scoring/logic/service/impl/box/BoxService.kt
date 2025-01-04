@@ -1,10 +1,8 @@
 package ru.tournament.scoring.logic.service.impl.box
 
 import org.springframework.stereotype.Service
-import ru.tournament.model.SportsmenInfoRequest
-import ru.tournament.model.SportsmenRateRequest
-import ru.tournament.model.SportsmenRequestDto
 import ru.tournament.scoring.BASE_SCORE
+import ru.tournament.scoring.dto.SportsmenRequestDto
 import ru.tournament.scoring.logic.client.TournamentStorageService
 import ru.tournament.scoring.logic.common.enums.Sport
 import ru.tournament.scoring.logic.common.enums.Step
@@ -13,6 +11,8 @@ import ru.tournament.scoring.logic.exception.BusinessLogicException
 import ru.tournament.scoring.logic.exception.Codes
 import ru.tournament.scoring.logic.mapper.toSportsmenInfo
 import ru.tournament.scoring.logic.service.ScoringService
+import ru.tournament.storage.dto.SportsmenInfoRequest
+import ru.tournament.storage.dto.SportsmenRateRequest
 
 @Service
 class BoxService(

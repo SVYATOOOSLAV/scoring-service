@@ -60,11 +60,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("io.mockk:mockk:1.13.13")
-    // https://mvnrepository.com/artifact/org.mockito.kotlin/mockito-kotlin
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
-
-
-    // https://mvnrepository.com/artifact/org.wiremock/wiremock-standalone
     testImplementation("org.wiremock:wiremock-standalone:3.9.2")
 }
 
@@ -88,22 +84,95 @@ dependencyManagement {
     }
 }
 
-var buildDir: File = project.layout.buildDirectory.get().asFile
-val outputDirPath = "$buildDir/generated"
+//var buildDir: File = project.layout.buildDirectory.get().asFile
+//val outputDirPath = "$buildDir/generated"
+//
+////root points of openApiSpec
+//val openApiSpecs = listOf(
+//    "$rootDir/src/main/resources/openapi/client/tournament-storage.yaml",
+//    "$rootDir/src/main/resources/openapi/interface/scoring-service.yaml"
+//)
+//
+//openApiSpecs.forEachIndexed { index, openApiSpec ->
+//    val openApiGenerateInterface = tasks.register<GenerateTask>("OpenApiGenerateInterface$index") {
+//        generatorName.set("kotlin-spring")
+//        inputSpec.set(openApiSpec)
+//        outputDir.set(outputDirPath)
+//        apiPackage.set("ru.tournament.api")
+//        modelPackage.set("ru.tournament.model")
+//
+//        generateApiTests.set(false)
+//        generateModelTests.set(false)
+//        generateApiDocumentation.set(false)
+//        generateModelDocumentation.set(false)
+//
+//        configOptions.putAll(
+//            mapOf(
+//                "interfaceOnly" to "true",
+//                "dateLibrary" to "java8",
+//                "serializationLibrary" to "jackson",
+//                "useSpringBoot3" to "true",
+//                "useTags" to "true",
+//                "requestMappingMode" to "api_interface"
+//            )
+//        )
+//    }
+//
+//    val openApiGenerateClient = tasks.register<GenerateTask>("OpenApiGenerateClient$index") {
+//        generatorName.set("kotlin")
+//        inputSpec.set(openApiSpec)
+//        outputDir.set(outputDirPath)
+//        apiPackage.set("ru.tournament.client")
+//        modelPackage.set("ru.tournament.model")
+//
+//        generateApiTests.set(false)
+//        generateModelTests.set(false)
+//        generateApiDocumentation.set(false)
+//        generateModelDocumentation.set(false)
+//
+//        configOptions.putAll(
+//            mapOf(
+//                "useTags" to "false",
+//                "library" to "jvm-spring-webclient",
+//                "dateLibrary" to "java8",
+//                "serializationLibrary" to "jackson",
+//                "useSpringBoot3" to "true",
+//                "apiSuffix" to "ApiClient",
+//            )
+//        )
+//    }
+//
+//    tasks.named("compileKotlin") {
+//        dependsOn(openApiGenerateInterface)
+//        dependsOn(openApiGenerateClient)
+//    }
+//}
+//
+//
+//sourceSets.main {
+//    java {
+//        srcDir("$buildDir/generated/src/main/kotlin")
+//    }
+//}
+data class OpenApiContract(val gradleTaskName: String, val specPathSuffix: String, val generatedPackageName: String) {
+    val specPath: String
+        get() = "$rootDir/src/main/resources/openapi/scoring-service/v1/$specPathSuffix"
+}
 
-//root points of openApiSpec
 val openApiSpecs = listOf(
-    "$rootDir/src/main/resources/openapi/client/tournament-storage.yaml",
-    "$rootDir/src/main/resources/openapi/interface/scoring-service.yaml"
+    OpenApiContract("generateStorageApi", "storage/tournament-storage.yaml", "storage"),
+    OpenApiContract("generateScoringApi", "scoring/scoring-service.yaml", "scoring")
 )
 
-openApiSpecs.forEachIndexed { index, openApiSpec ->
-    val openApiGenerateInterface = tasks.register<GenerateTask>("OpenApiGenerateInterface$index") {
+val outputDirPath = "${project.layout.buildDirectory.get().asFile}/generated"
+
+openApiSpecs.forEach {
+    val openApiGenerateInterface = tasks.register<GenerateTask>(it.gradleTaskName) {
         generatorName.set("kotlin-spring")
-        inputSpec.set(openApiSpec)
+        inputSpec.set(it.specPath)
         outputDir.set(outputDirPath)
-        apiPackage.set("ru.tournament.api")
-        modelPackage.set("ru.tournament.model")
+        apiPackage.set("ru.tournament.${it.generatedPackageName}.api")
+        modelPackage.set("ru.tournament.${it.generatedPackageName}.dto")
 
         generateApiTests.set(false)
         generateModelTests.set(false)
@@ -122,12 +191,12 @@ openApiSpecs.forEachIndexed { index, openApiSpec ->
         )
     }
 
-    val openApiGenerateClient = tasks.register<GenerateTask>("OpenApiGenerateClient$index") {
+    val openApiGenerateClient = tasks.register<GenerateTask>(it.gradleTaskName + "Client") {
         generatorName.set("kotlin")
-        inputSpec.set(openApiSpec)
+        inputSpec.set(it.specPath)
         outputDir.set(outputDirPath)
-        apiPackage.set("ru.tournament.client")
-        modelPackage.set("ru.tournament.model")
+        apiPackage.set("ru.tournament.${it.generatedPackageName}.client")
+        modelPackage.set("ru.tournament.${it.generatedPackageName}.dto")
 
         generateApiTests.set(false)
         generateModelTests.set(false)
@@ -152,10 +221,8 @@ openApiSpecs.forEachIndexed { index, openApiSpec ->
     }
 }
 
-
 sourceSets.main {
     java {
-        srcDir("$buildDir/generated/src/main/kotlin")
+        srcDir("$outputDirPath/src/main/kotlin")
     }
 }
-

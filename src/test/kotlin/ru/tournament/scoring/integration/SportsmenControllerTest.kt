@@ -1,14 +1,22 @@
-package ru.tournament.scoring.integration_test
+package ru.tournament.scoring.integration
 
-import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import ru.tournament.model.*
 import ru.tournament.scoring.AbstractMockMvc
-import testFixtures.stubs.*
+import ru.tournament.scoring.dto.SportsmenRequestDto
+import ru.tournament.scoring.dto.SportsmenSanction
+import ru.tournament.scoring.logic.exception.Codes
+import ru.tournament.storage.dto.SportsmenGamesResponse
+import ru.tournament.storage.dto.SportsmenInfoResponse
+import ru.tournament.storage.dto.SportsmenRateResponse
+import testFixtures.stubs.getSportsmenGamesLastPeriodStub
+import testFixtures.stubs.getSportsmenGamesStub
+import testFixtures.stubs.getSportsmenInfoStub
+import testFixtures.stubs.getSportsmenSanctionsStub
+import testFixtures.stubs.updateSportsmenRateStub
 import java.time.LocalDate
 
 class SportsmenControllerTest : AbstractMockMvc() {
@@ -76,45 +84,43 @@ class SportsmenControllerTest : AbstractMockMvc() {
     }
 
     @Test
-    fun getSportsmenInfoReturnInternalErrorTest(){
+    fun getSportsmenInfoReturnInternalErrorTest() {
         getSportsmenInfoStub(500, infoResponse)
         getSportsmenGamesStub(200, allGames)
         getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
         getSportsmenSanctionsStub(200, sanctions)
         updateSportsmenRateStub(200, response)
 
-
         mvc.perform(
             MockMvcRequestBuilders.post("/api/v1/users/score")
                 .content(toJson(request))
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isInternalServerError)
-            .andExpect(jsonPath("$.code").value(-99))
-            .andExpect(jsonPath("$.message").value("Ошибки внешеней системы"))
+            .andExpect(jsonPath("$.code").value(Codes.EXTERNAL_SYSTEM_ERROR.code))
+            .andExpect(jsonPath("$.message").value(Codes.EXTERNAL_SYSTEM_ERROR.message))
     }
 
     @Test
-    fun getSportsmenInfoBadRequestTest(){
+    fun getSportsmenInfoBadRequestTest() {
         getSportsmenInfoStub(400, infoResponse)
         getSportsmenGamesStub(200, allGames)
         getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
         getSportsmenSanctionsStub(200, sanctions)
         updateSportsmenRateStub(200, response)
 
-
         mvc.perform(
             MockMvcRequestBuilders.post("/api/v1/users/score")
                 .content(toJson(request))
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isInternalServerError)
-            .andExpect(jsonPath("$.code").value(-99))
-            .andExpect(jsonPath("$.message").value("Ошибки внешеней системы"))
+            .andExpect(jsonPath("$.code").value(Codes.EXTERNAL_SYSTEM_ERROR.code))
+            .andExpect(jsonPath("$.message").value(Codes.EXTERNAL_SYSTEM_ERROR.message))
     }
 
     @Test
-    fun getSportsmenGamesReturnInternalErrorTest(){
+    fun getSportsmenGamesReturnInternalErrorTest() {
         getSportsmenInfoStub(200, infoResponse)
         getSportsmenGamesStub(500, allGames)
         getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
@@ -132,7 +138,7 @@ class SportsmenControllerTest : AbstractMockMvc() {
     }
 
     @Test
-    fun getSportsmenGamesReturnBadRequestTest(){
+    fun getSportsmenGamesReturnBadRequestTest() {
         getSportsmenInfoStub(200, infoResponse)
         getSportsmenGamesStub(400, allGames)
         getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
@@ -150,7 +156,7 @@ class SportsmenControllerTest : AbstractMockMvc() {
     }
 
     @Test
-    fun getSportsmenGamesLastPeriodReturnInternalErrorTest(){
+    fun getSportsmenGamesLastPeriodReturnInternalErrorTest() {
         getSportsmenInfoStub(200, infoResponse)
         getSportsmenGamesStub(200, allGames)
         getSportsmenGamesLastPeriodStub(500, gamesLastPeriod)
@@ -168,7 +174,7 @@ class SportsmenControllerTest : AbstractMockMvc() {
     }
 
     @Test
-    fun getSportsmenGamesLastPeriodReturnIBadRequestTest(){
+    fun getSportsmenGamesLastPeriodReturnIBadRequestTest() {
         getSportsmenInfoStub(200, infoResponse)
         getSportsmenGamesStub(200, allGames)
         getSportsmenGamesLastPeriodStub(400, gamesLastPeriod)
@@ -186,14 +192,13 @@ class SportsmenControllerTest : AbstractMockMvc() {
     }
 
     @Test
-    fun getSportsmenSanctionsReturnInternalErrorTest(){
+    fun getSportsmenSanctionsReturnInternalErrorTest() {
         getSportsmenInfoStub(200, infoResponse)
         getSportsmenGamesStub(200, allGames)
         getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
         getSportsmenSanctionsStub(500, sanctions)
         updateSportsmenRateStub(200, response)
 
-
         mvc.perform(
             MockMvcRequestBuilders.post("/api/v1/users/score")
                 .content(toJson(request))
@@ -205,14 +210,13 @@ class SportsmenControllerTest : AbstractMockMvc() {
     }
 
     @Test
-    fun getSportsmenSanctionsReturnBadRequestTest(){
+    fun getSportsmenSanctionsReturnBadRequestTest() {
         getSportsmenInfoStub(200, infoResponse)
         getSportsmenGamesStub(200, allGames)
         getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
         getSportsmenSanctionsStub(400, sanctions)
         updateSportsmenRateStub(200, response)
 
-
         mvc.perform(
             MockMvcRequestBuilders.post("/api/v1/users/score")
                 .content(toJson(request))
@@ -224,7 +228,7 @@ class SportsmenControllerTest : AbstractMockMvc() {
     }
 
     @Test
-    fun updateSportsmenRateReturnErrorTest(){
+    fun updateSportsmenRateReturnErrorTest() {
         getSportsmenInfoStub(200, infoResponse)
         getSportsmenGamesStub(200, allGames)
         getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
@@ -237,12 +241,12 @@ class SportsmenControllerTest : AbstractMockMvc() {
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isInternalServerError)
-            .andExpect(jsonPath("$.code").value(-99))
-            .andExpect(jsonPath("$.message").value("Ошибки внешеней системы"))
+            .andExpect(jsonPath("$.code").value(Codes.EXTERNAL_SYSTEM_ERROR.code))
+            .andExpect(jsonPath("$.message").value(Codes.EXTERNAL_SYSTEM_ERROR.message))
     }
 
     @Test
-    fun updateSportsmenRateReturnEBadRequestTest(){
+    fun updateSportsmenRateReturnEBadRequestTest() {
         getSportsmenInfoStub(200, infoResponse)
         getSportsmenGamesStub(200, allGames)
         getSportsmenGamesLastPeriodStub(200, gamesLastPeriod)
@@ -255,7 +259,7 @@ class SportsmenControllerTest : AbstractMockMvc() {
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isInternalServerError)
-            .andExpect(jsonPath("$.code").value(-99))
-            .andExpect(jsonPath("$.message").value("Ошибки внешеней системы"))
+            .andExpect(jsonPath("$.code").value(Codes.EXTERNAL_SYSTEM_ERROR.code))
+            .andExpect(jsonPath("$.message").value(Codes.EXTERNAL_SYSTEM_ERROR.message))
     }
 }

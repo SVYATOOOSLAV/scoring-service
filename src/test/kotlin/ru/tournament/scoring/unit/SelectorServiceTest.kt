@@ -1,4 +1,4 @@
-package ru.tournament.scoring.unit_test
+package ru.tournament.scoring.unit
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import ru.tournament.model.SportsmenRequestDto
+import ru.tournament.scoring.dto.SportsmenRequestDto
 import ru.tournament.scoring.logic.common.enums.Sport
 import ru.tournament.scoring.logic.common.model.Result
 import ru.tournament.scoring.logic.exception.Codes

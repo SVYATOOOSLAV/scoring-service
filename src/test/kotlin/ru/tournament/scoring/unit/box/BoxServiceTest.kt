@@ -1,38 +1,40 @@
-package ru.tournament.scoring.unit_test.box
+package ru.tournament.scoring.unit.box
 
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.Mockito.anyInt
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
-import ru.tournament.model.SportsmenInfoRequest
-import ru.tournament.model.SportsmenInfoResponse
-import ru.tournament.model.SportsmenRateRequest
-import ru.tournament.model.SportsmenRequestDto
+import ru.tournament.scoring.dto.SportsmenRequestDto
 import ru.tournament.scoring.logic.client.TournamentStorageService
 import ru.tournament.scoring.logic.common.enums.Sport
 import ru.tournament.scoring.logic.common.enums.Step
 import ru.tournament.scoring.logic.common.model.Result
+import ru.tournament.scoring.logic.common.model.ScoreStepResult
 import ru.tournament.scoring.logic.common.model.SportsmenInfo
-import ru.tournament.scoring.logic.common.model.SportsmenResultScore
 import ru.tournament.scoring.logic.exception.BusinessLogicException
 import ru.tournament.scoring.logic.exception.Codes
 import ru.tournament.scoring.logic.service.impl.box.BoxScoringStep
 import ru.tournament.scoring.logic.service.impl.box.BoxService
-import ru.tournament.scoring.logic.service.impl.box.steps.*
+import ru.tournament.scoring.logic.service.impl.box.steps.AgeCoefficientBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.AverageWinsBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.HeightCoefficientBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.SanctionsCoefficientBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.WeightCoefficientBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.WinnerCoefficientBoxStep
+import ru.tournament.storage.dto.SportsmenInfoRequest
+import ru.tournament.storage.dto.SportsmenInfoResponse
+import ru.tournament.storage.dto.SportsmenRateRequest
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
-
 @ExtendWith(MockitoExtension::class)
-class BoxServiceTest{
+class BoxServiceTest {
 
     private lateinit var boxService: BoxService
 
@@ -66,7 +68,7 @@ class BoxServiceTest{
         sportsmenRequest.sportsmenId,
         sportsmenRequest.sport,
         true,
-        LocalDate.of(2004,12,29),
+        LocalDate.of(2004, 12, 29),
         82.0,
         1.83
     )
@@ -84,7 +86,7 @@ class BoxServiceTest{
     private var possibleScore = 10.0
 
     @BeforeEach
-    fun setUp(){
+    fun setUp() {
         steps = listOf(
             ageCoefficientBoxStep,
             averageWinsBoxStep,
@@ -100,32 +102,34 @@ class BoxServiceTest{
             .thenReturn(sportsmenInfoResponse)
 
         `when`(ageCoefficientBoxStep.calculate(sportsmenInfo))
-            .thenReturn(SportsmenResultScore(possibleScore, Step.AGE))
+            .thenReturn(ScoreStepResult(possibleScore, Step.AGE))
 
         `when`(averageWinsBoxStep.calculate(sportsmenInfo))
-            .thenReturn(SportsmenResultScore(possibleScore, Step.AVERAGE_WINS))
+            .thenReturn(ScoreStepResult(possibleScore, Step.AVERAGE_WINS))
 
         `when`(heightCoefficientBoxStep.calculate(sportsmenInfo))
-            .thenReturn(SportsmenResultScore(possibleScore, Step.HEIGHT))
+            .thenReturn(ScoreStepResult(possibleScore, Step.HEIGHT))
 
         `when`(sanctionsCoefficientBoxStep.calculate(sportsmenInfo))
-            .thenReturn(SportsmenResultScore(possibleScore, Step.SANCTIONS))
+            .thenReturn(ScoreStepResult(possibleScore, Step.SANCTIONS))
 
         `when`(weightCoefficientBoxStep.calculate(sportsmenInfo))
-            .thenReturn(SportsmenResultScore(possibleScore, Step.WEIGHT))
+            .thenReturn(ScoreStepResult(possibleScore, Step.WEIGHT))
 
         `when`(winnerCoefficientBoxStep.calculate(sportsmenInfo))
-            .thenReturn(SportsmenResultScore(possibleScore, Step.WINNER))
+            .thenReturn(ScoreStepResult(possibleScore, Step.WINNER))
     }
 
     @Test
-    fun scoreSportsmenSuccess(){
+    fun scoreSportsmenSuccess() {
         val expectedScore = 90.0
         val expectedResult = 0
 
-        `when`(tournamentStorageService.updateRateSportsmen(
-            SportsmenRateRequest(sportsmenRequest.sportsmenId, sportsmenRequest.sport, expectedScore)
-        )).thenReturn(Result(0))
+        `when`(
+            tournamentStorageService.updateRateSportsmen(
+                SportsmenRateRequest(sportsmenRequest.sportsmenId, sportsmenRequest.sport, expectedScore)
+            )
+        ).thenReturn(Result(0))
 
         val result = boxService.score(sportsmenRequest)
 
@@ -133,7 +137,7 @@ class BoxServiceTest{
     }
 
     @Test
-    fun scoreSportsmenCorrectRateSuccess(){
+    fun scoreSportsmenCorrectRateSuccess() {
         val expectedScore = 90.0
 
         val rateRequestCaptor = argumentCaptor<SportsmenRateRequest>()
@@ -149,15 +153,17 @@ class BoxServiceTest{
     }
 
     @Test
-    fun exceptionWhileUpdatingRateForSportsmenTest(){
+    fun exceptionWhileUpdatingRateForSportsmenTest() {
         val expectedScore = 90.0
         val expectedResult = -100
 
-        `when`(tournamentStorageService.updateRateSportsmen(
-            SportsmenRateRequest(sportsmenRequest.sportsmenId, sportsmenRequest.sport, expectedScore)
-        )).thenReturn(Result(expectedResult))
+        `when`(
+            tournamentStorageService.updateRateSportsmen(
+                SportsmenRateRequest(sportsmenRequest.sportsmenId, sportsmenRequest.sport, expectedScore)
+            )
+        ).thenReturn(Result(expectedResult))
 
-        val e = assertThrows(BusinessLogicException::class.java){
+        val e = assertThrows(BusinessLogicException::class.java) {
             boxService.score(sportsmenRequest)
         }
 

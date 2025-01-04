@@ -1,7 +1,5 @@
-package ru.tournament.scoring.unit_test.box
+package ru.tournament.scoring.unit.box
 
-import io.mockk.verify
-import io.mockk.verifyCount
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -9,16 +7,21 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import ru.tournament.model.SportsmenGamesRequest
-import ru.tournament.model.SportsmenGamesResponse
-import ru.tournament.model.SportsmenSanctionsRequest
-import ru.tournament.model.SportsmenSanctionsResponse
 import ru.tournament.scoring.logic.client.TournamentStorageService
 import ru.tournament.scoring.logic.common.enums.Step
+import ru.tournament.scoring.logic.common.model.ScoreStepResult
 import ru.tournament.scoring.logic.common.model.SportsmenInfo
-import ru.tournament.scoring.logic.common.model.SportsmenResultScore
 import ru.tournament.scoring.logic.service.impl.box.BoxMakerService
-import ru.tournament.scoring.logic.service.impl.box.steps.*
+import ru.tournament.scoring.logic.service.impl.box.steps.AgeCoefficientBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.AverageWinsBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.HeightCoefficientBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.SanctionsCoefficientBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.WeightCoefficientBoxStep
+import ru.tournament.scoring.logic.service.impl.box.steps.WinnerCoefficientBoxStep
+import ru.tournament.storage.dto.SportsmenGamesRequest
+import ru.tournament.storage.dto.SportsmenGamesResponse
+import ru.tournament.storage.dto.SportsmenSanctionsRequest
+import ru.tournament.storage.dto.SportsmenSanctionsResponse
 import java.time.LocalDate
 import java.time.Period
 
@@ -76,7 +79,7 @@ class BoxStepTest {
             )
         ).thenReturn(possibleScore)
 
-        val expectedValue = SportsmenResultScore(possibleScore, Step.AGE)
+        val expectedValue = ScoreStepResult(possibleScore, Step.AGE)
         val result = ageStep.calculate(info)
 
         assertEquals(expectedValue.resultScore, result.resultScore)
@@ -95,7 +98,7 @@ class BoxStepTest {
             boxMakerService.calculateAverageForGames(gamesList)
         ).thenReturn(possibleScore)
 
-        val expectedValue = SportsmenResultScore(possibleScore, Step.AVERAGE_WINS)
+        val expectedValue = ScoreStepResult(possibleScore, Step.AVERAGE_WINS)
         val result = averageWinsStep.calculate(info)
 
         assertEquals(expectedValue.resultScore, result.resultScore)
@@ -107,7 +110,7 @@ class BoxStepTest {
         Mockito.`when`(boxMakerService.calculateHeight(info.height))
             .thenReturn(possibleScore)
 
-        val expectedValue = SportsmenResultScore(possibleScore, Step.HEIGHT)
+        val expectedValue = ScoreStepResult(possibleScore, Step.HEIGHT)
         val result = heightStep.calculate(info)
 
         assertEquals(expectedValue.resultScore, result.resultScore)
@@ -117,10 +120,12 @@ class BoxStepTest {
     @Test
     fun calculateSanctionsCoefficientTest() {
         val sanctionsRequest = SportsmenSanctionsRequest(
-            info.id, info.sport, info.periodValidation
+            info.id,
+            info.sport,
+            info.periodValidation
         )
         val sanctionList = listOf(
-            SportsmenSanctionsResponse(info.id,1)
+            SportsmenSanctionsResponse(info.id, 1)
         )
 
         Mockito.`when`(
@@ -130,7 +135,7 @@ class BoxStepTest {
         Mockito.`when`(boxMakerService.calculateSanctions(sanctionList))
             .thenReturn(possibleScore)
 
-        val expectedValue = SportsmenResultScore(possibleScore, Step.SANCTIONS)
+        val expectedValue = ScoreStepResult(possibleScore, Step.SANCTIONS)
         val result = sanctionsStep.calculate(info)
 
         assertEquals(expectedValue.resultScore, result.resultScore)
@@ -138,10 +143,10 @@ class BoxStepTest {
     }
 
     @Test
-    fun calculateWeightCoefficientTest(){
+    fun calculateWeightCoefficientTest() {
         Mockito.`when`(boxMakerService.calculateWeight(info.weight, info.isMale)).thenReturn(possibleScore)
 
-        val expectedValue = SportsmenResultScore(possibleScore, Step.WEIGHT)
+        val expectedValue = ScoreStepResult(possibleScore, Step.WEIGHT)
         val result = weightStep.calculate(info)
 
         assertEquals(expectedValue.resultScore, result.resultScore)
@@ -149,11 +154,11 @@ class BoxStepTest {
     }
 
     @Test
-    fun calculateWinnerCoefficientTest(){
+    fun calculateWinnerCoefficientTest() {
         Mockito.`when`(tournamentStorageService.getSportsmenGames(gamesRequest)).thenReturn(gamesList)
         Mockito.`when`(boxMakerService.calculateLastWins(gamesList)).thenReturn(possibleScore)
 
-        val expectedValue = SportsmenResultScore(possibleScore, Step.WINNER)
+        val expectedValue = ScoreStepResult(possibleScore, Step.WINNER)
         val result = winnerStep.calculate(info)
 
         assertEquals(expectedValue.resultScore, result.resultScore)
