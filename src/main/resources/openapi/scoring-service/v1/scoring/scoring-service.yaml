@@ -1,0 +1,145 @@
+openapi: 3.0.2
+info:
+  title: "tournament-storage"
+  description: "It's easy to manage your sport tournament or league"
+  version: "1.0"
+  contact:
+    name: "SportManager"
+    url: "https://sportmanager.com/support"
+    email: "sportmanager@gmail.com"
+
+paths:
+  /api/v1/users/score:
+    post:
+      tags:
+        - ScoringService
+      operationId: scoreSportsmen
+      summary: "Производит скоринг спортсмена по определенному виду спорта"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SportsmenRequestDto"
+      responses:
+          '200':
+            description: ""
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/SportsmenResponseDto'
+          '400':
+            description: "Bad request"
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/BadRequestDto'
+          '401':
+            description: "Unauthorized"
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UnauthorizedDto'
+          '403':
+            description: "Forbidden"
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ForbiddenDto'
+          '404':
+            description: "Not found"
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/NotFoundDto'
+          '500':
+            description: "Internal Server Error"
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/InternalErrorDto'
+
+components:
+  schemas:
+
+    SportsmenRequestDto:
+      type: object
+      required:
+        - sportsmen_id
+        - sport
+      properties:
+        sportsmen_id:
+          type: integer
+        sport:
+          type: string
+        period:
+          type: integer
+
+    SportsmenResponseDto:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+
+    SportsmenSanction:
+      type: object
+      properties:
+        sportsmen_id:
+          type: integer
+        sanction_id:
+          type: integer
+
+
+    BadRequestDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    UnauthorizedDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    ForbiddenDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    NotFoundDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    InternalErrorDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer

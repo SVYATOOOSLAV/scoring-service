@@ -1,0 +1,407 @@
+openapi: 3.0.2
+info:
+  title: "tournament-storage"
+  description: "It's easy to manage your sport tournament or league"
+  version: "1.0"
+  contact:
+    name: "SportManager"
+    url: "https://sportmanager.com/support"
+    email: "sportmanager@gmail.com"
+
+paths:
+  /api/v1/users/get_sportsmen_info:
+    post:
+      tags:
+        - TournamentStorage
+      operationId: getSportsmenInfo
+      summary: "Получить данные о спортсмене"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsmenInfoRequest'
+      responses:
+        '200':
+          description: "Информация о спортсмене"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SportsmenInfoResponse'
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequestDto'
+        '401':
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnauthorizedDto'
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ForbiddenDto'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotFoundDto'
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InternalErrorDto'
+
+  /api/v1/users/get_sportsmen_games:
+    post:
+      tags:
+        - TournamentStorage
+      operationId: getSportsmenGames
+      summary: "Получить игры спортсмена по конкретному виду спорта"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsmenGamesRequest'
+      responses:
+        '200':
+          description: "Список игр по конкретному виду спорта"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SportsmenGamesResponse'
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequestDto'
+        '401':
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnauthorizedDto'
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ForbiddenDto'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotFoundDto'
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InternalErrorDto'
+
+  /api/v1/users/get_sportsmen_sanctions:
+    post:
+      tags:
+        - TournamentStorage
+      operationId: getSportsmenSanctions
+      summary: "Получить все санкции спортсмена по конкретному виду спорта"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsmenSanctionsRequest'
+      responses:
+        '200':
+          description: "Список санкций по конкретному виду спорта"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SportsmenSanctionsResponse'
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequestDto'
+        '401':
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnauthorizedDto'
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ForbiddenDto'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotFoundDto'
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InternalErrorDto'
+
+  /api/v1/users/update_sportsmen_rate:
+    post:
+      tags:
+        - TournamentStorage
+      operationId: updateSportsmenRate
+      summary: "Обновить рейтинг спортсмена"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsmenRateRequest'
+      responses:
+        '200':
+          description: "Обновление рейтинга спортсмена по виду спорта"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SportsmenRateResponse"
+
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequestDto'
+        '401':
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnauthorizedDto'
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ForbiddenDto'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotFoundDto'
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InternalErrorDto'
+
+components:
+  schemas:
+
+    SportsmenInfoRequest:
+      type: object
+      required:
+        - id
+        - sport
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+
+    SportsmenInfoResponse:
+      type: object
+      required:
+        - id
+        - sport
+        - is_male
+        - birthday
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+        is_male:
+          type: boolean
+        birthday:
+          type: string
+          format: date
+        weight:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+
+    SportsmenRateRequest:
+      type: object
+      required:
+        - id
+        - sport
+        - rate
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+        rate:
+          type: number
+          format: double
+
+    SportsmenRateResponse:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+
+    SportsmenGamesRequest:
+      type: object
+      required:
+        - id
+        - sport
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+        period:
+          type: integer
+
+    SportsmenGamesResponse:
+      type: object
+      properties:
+        sportsmen_id:
+          type: integer
+        tournament_id:
+          type: integer
+        sport:
+          type: string
+        is_official:
+          type: boolean
+        place:
+          type: integer
+
+    SportsmenSanctionsRequest:
+      type: object
+      required:
+        - id
+        - sport
+      properties:
+        id:
+          type: integer
+        sport:
+          type: string
+        period:
+          type: integer
+
+    SportsmenSanctionsResponse:
+      type: object
+      properties:
+        sportsmen_id:
+          type: integer
+        sanction_id:
+          type: integer
+
+
+    BadRequestDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    UnauthorizedDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    ForbiddenDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    NotFoundDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+
+    InternalErrorDto:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer

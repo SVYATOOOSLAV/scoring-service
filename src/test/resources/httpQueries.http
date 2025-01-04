@@ -1,0 +1,9 @@
+###
+POST http://localhost:8081/api/v1/users/score
+Content-Type: application/json
+
+{
+  "sportsmen_id": 12,
+  "sport": "box",
+  "period": 12
+}
